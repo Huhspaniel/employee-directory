@@ -38,15 +38,15 @@ $('.verify').click(function() {
 	renderList();
 });
 $('.update').click(function() {
+	setActiveNav(this);
 	$('.inputs *').show('inherit');
 	$('.submitBtn').text('edit');
-	setActiveNav(this);
 });
 $('.delete').click(function() {
+	setActiveNav(this);
 	$('.inputs *').show('inherit');
 	$('.inputBars *:not(.nameInput)').hide();
 	$('.submitBtn').text('delete');
-	setActiveNav(this);
 });
 
 $('.view').click();

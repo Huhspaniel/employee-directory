@@ -12,6 +12,7 @@ nav {
 	-ms-user-select: none;
 	user-select: none;
 
+	-webkit-position: sticky;
 	position: sticky;
 	top: 0;
 	height: 50px;

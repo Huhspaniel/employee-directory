@@ -1,7 +1,5 @@
 // global variable for user input employee
 let input;
-// array of displayed employees
-let display = [];
 // Create employee object
 function Employee(name, officeNum, phoneNum) {
 	this.name = name;
@@ -18,19 +16,16 @@ function formatEmployee(employee) {
 }
 // Clear display of employeeList
 function clear() {
-	$('.employees').empty();
+	$('.employees, .message').empty();
 }
-function render(obj) {
-	if (typeof obj === 'object') {
+// Displaying info
+function render(doClear, obj) {
+	if (doClear) clear(); // if passed 'true' for doClear, invoke clear() to empty .employees
+	if (typeof obj === 'object') { // if passed employee object, prepend to div.employees
 		$('.employees').prepend(
 			formatEmployee(obj)
 		);
-	} else if (obj) {
-		$('.employees').prepend(
-			obj
-		);
-	} else {
-		clear();
+	} else { // if passed nothing for obj, render current employeeList
 		$(employeeList).each(
 			function(i, currEmployee) {
 				$('.employees').prepend(
@@ -40,8 +35,8 @@ function render(obj) {
 		);
 	}
 }
-function toThreeDigits(num) {
-	return ('000' + num).slice(-3);
+function message(msg) {
+	$('.message').text(msg);
 }
 function setActiveNav(clicked) {
 	$('.activated').removeClass('activated');
@@ -51,14 +46,14 @@ $('.view').click(function() {
 	setActiveNav(this);
 	clearInput();
 	$('.inputs *').hide();
-	render();
+	render(true);
 });
 $('.add').click(function() {
 	setActiveNav(this);
 	clearInput();
 	$('.inputs *').show('inherit');
 	$('.submitBtn').text('add');
-	render();
+	render(true);
 });
 $('.verify').click(function() {
 	setActiveNav(this);
@@ -66,14 +61,14 @@ $('.verify').click(function() {
 	$('.inputs *').show('inherit');
 	$('.inputBars *:not(.nameInput)').hide();
 	$('.submitBtn').text('search');
-	render();
+	render(true);
 });
 $('.update').click(function() {
 	setActiveNav(this);
 	clearInput();
 	$('.inputs *').show('inherit');
 	$('.submitBtn').text('edit');
-	render();
+	render(true);
 });
 $('.delete').click(function() {
 	setActiveNav(this);
@@ -81,7 +76,7 @@ $('.delete').click(function() {
 	$('.inputs *').show('inherit');
 	$('.inputBars *:not(.nameInput)').hide();
 	$('.submitBtn').text('delete');
-	render();
+	render(true);
 });
 $('.inputBars').on(
 	'input',
@@ -92,11 +87,11 @@ $('.inputBars').on(
 			clear();
 			for (let i = 0; i < employeeList.length; i++) {
 				if(employeeList[i].name.includes(input.name)) {
-					render(employeeList[i]);
+					render(false, employeeList[i]);
 					found = true;
 				}
 			}
-			if (!found) render('Employee not found.');
+			if (!found) message(`Employee "${input.name}" not found.`);
 		}
 	}
 );
@@ -131,42 +126,40 @@ function deleteEmployee(employeeIndex) {
 	employeeList.splice(employeeIndex, 1);
 }
 $('.submitBtn').click(function() {
-	const input = getInputEmployee();
-	clearInput();
 	switch(this.innerText) {
 		case 'add':
-			if (findEmployee(input) !== -1) {
-				render('Employee already exists.');
+			const employee = getInputEmployee();
+			if (findEmployee(employee) !== -1) {
+				message(`Employee "${employee.name}" already exists.`);
 			} else {
 				addEmployee(input);
-				render();
+				render(true);
 			}
 			break;
 		case 'search':
 			clear();
 			var i = findEmployee(input);
 			if (i !== -1) {
-				render(employeeList[i]);
+				render(true, employeeList[i]);
 			} else {
-				render('Employee not found.');
+				message(`Employee "${input.name}" not found.`);
 			}
 			break;
 		case 'edit':
 			i = findEmployee(input);
 			if (i !== -1) {
 				updateEmployee(employeeList[i], input);
-				render();
+				render(true);
 			} else {
-				render();
-				render('Employee not found.');
+				message(`Employee "${input.name}" not found.`);
 			}
 			break;
 		case 'delete':
 			i = findEmployee(input);
 			if (i !== -1) {
 				deleteEmployee(i);
+				render(true);
 			}
-			render();
 			break;
 	}
 	clearInput();

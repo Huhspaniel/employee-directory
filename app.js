@@ -132,7 +132,7 @@ $('.submitBtn').click(function() {
 			if (findEmployee(employee) !== -1) {
 				message(`Employee "${employee.name}" already exists.`);
 			} else {
-				addEmployee(input);
+				addEmployee(employee);
 				render(true);
 			}
 			break;

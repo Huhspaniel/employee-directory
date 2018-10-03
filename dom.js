@@ -32,6 +32,15 @@ const $ = function(selector) {
         }
     }
 
+	const hasClass = function(className) {
+		for (let i = 0; i < nodeList.length; i++) {
+            if (nodeList[i].classList.contains(className)) {
+				return true;
+			}
+        }
+		return false;
+	}
+
     const empty = function() {
         for (let i = 0; i < nodeList.length; i++) {
             nodeList[i].innerHTML = '';
@@ -51,11 +60,13 @@ const $ = function(selector) {
     }
 
     const val = function(content) {
-        if (content === undefined) {
-            return nodeList[0].value;
+		if (content !== undefined) {
+            for (let i = 0; i < nodeList.length; i++) {
+				nodeList[i].value = content;
+			}
         } else {
-            nodeList[0].value = content;
-        }
+			return nodeList[0].value;
+		}
     }
 
     const on = function(action, cb) {
@@ -105,6 +116,7 @@ const $ = function(selector) {
         addClass: addClass,
         removeClass: removeClass,
         toggleClass: toggleClass,
+		hasClass: hasClass,
         empty: empty,
         append: append,
         prepend: prepend,

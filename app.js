@@ -14,13 +14,13 @@ function formatEmployee(employee) {
 		`<p>${employee.phoneNum}</p>\n` +
 	'</div>';
 }
-// Clear display of employeeList
+// Clear display
 function clear() {
 	$('.employees, .message').empty();
 }
 // Displaying info
-function render(doClear, obj) {
-	if (doClear) clear(); // if passed 'true' for doClear, invoke clear() to empty .employees
+function render(dontClear, obj) {
+	if (!dontClear) clear(); // if passed 'true' for dontClear, don't invoke clear()
 	if (typeof obj === 'object') { // if passed employee object, prepend to div.employees
 		$('.employees').prepend(
 			formatEmployee(obj)
@@ -46,14 +46,14 @@ $('.view').click(function() {
 	setActiveNav(this);
 	clearInput();
 	$('.inputs *').hide();
-	render(true);
+	render();
 });
 $('.add').click(function() {
 	setActiveNav(this);
 	clearInput();
 	$('.inputs *').show('inherit');
 	$('.submitBtn').text('add');
-	render(true);
+	render();
 });
 $('.verify').click(function() {
 	setActiveNav(this);
@@ -61,14 +61,14 @@ $('.verify').click(function() {
 	$('.inputs *').show('inherit');
 	$('.inputBars *:not(.nameInput)').hide();
 	$('.submitBtn').text('search');
-	render(true);
+	render();
 });
 $('.update').click(function() {
 	setActiveNav(this);
 	clearInput();
 	$('.inputs *').show('inherit');
 	$('.submitBtn').text('edit');
-	render(true);
+	render();
 });
 $('.delete').click(function() {
 	setActiveNav(this);
@@ -76,27 +76,9 @@ $('.delete').click(function() {
 	$('.inputs *').show('inherit');
 	$('.inputBars *:not(.nameInput)').hide();
 	$('.submitBtn').text('delete');
-	render(true);
+	render();
 });
-$('.inputBars').on(
-	'input',
-	function() {
-		if ($('.verify, .update, .delete').hasClass('activated')) {
-			input = getInputEmployee();
-			let found = false;
-			clear();
-			for (let i = 0; i < employeeList.length; i++) {
-				if(employeeList[i].name.includes(input.name)) {
-					render(false, employeeList[i]);
-					found = true;
-				}
-			}
-			if (!found) message(`Employee "${input.name}" not found.`);
-		}
-	}
-);
-
-function getInputEmployee() {
+function getInput() {
 	return new Employee(
 		$('.nameInput').val(),
 		$('.officeNumInput').val(),
@@ -105,7 +87,26 @@ function getInputEmployee() {
 }
 function clearInput() {
 	$('.inputBars > input').val('');
+	input = undefined;
 }
+function updateList() {
+	input = getInput();
+	if ($('.verify, .update, .delete').hasClass('activated')) {
+		let found = false;
+		clear();
+		for (let i = 0; i < employeeList.length; i++) {
+			if(employeeList[i].name.includes(input.name)) {
+				render(true, employeeList[i]);
+				found = true;
+			}
+		}
+		if (!found) message(`Employee "${input.name}" not found.`);
+	}
+}
+$('.inputBars').on(
+	'input',
+	updateList
+);
 function addEmployee(employee) {
 	employeeList.push(employee);
 }
@@ -126,43 +127,51 @@ function deleteEmployee(employeeIndex) {
 	employeeList.splice(employeeIndex, 1);
 }
 $('.submitBtn').click(function() {
-	switch(this.innerText) {
-		case 'add':
-			const employee = getInputEmployee();
-			if (findEmployee(employee) !== -1) {
-				message(`Employee "${employee.name}" already exists.`);
-			} else {
-				addEmployee(employee);
-				render(true);
-			}
-			break;
-		case 'search':
-			clear();
-			var i = findEmployee(input);
-			if (i !== -1) {
-				render(true, employeeList[i]);
-			} else {
-				message(`Employee "${input.name}" not found.`);
-			}
-			break;
-		case 'edit':
-			i = findEmployee(input);
-			if (i !== -1) {
-				updateEmployee(employeeList[i], input);
-				render(true);
-			} else {
-				message(`Employee "${input.name}" not found.`);
-			}
-			break;
-		case 'delete':
-			i = findEmployee(input);
-			if (i !== -1) {
-				deleteEmployee(i);
-				render(true);
-			}
-			break;
+	if (input) {
+		switch(this.innerText) {
+			case 'add':
+				if (findEmployee(input) > -1) {
+					message(`Employee "${input.name}" already exists.`);
+				} else {
+					addEmployee(input);
+					render();
+					message(`Employee "${input.name}" created successfully.`)
+				}
+				break;
+			case 'search':
+				clear();
+				var i = findEmployee(input);
+				if (i !== -1) {
+					render(false, employeeList[i]);
+					message('Employee found.')
+				} else {
+					render(false);
+				}
+				break;
+			case 'edit':
+				i = findEmployee(input);
+				if (i !== -1) {
+					updateEmployee(employeeList[i], input);
+					render();
+					message(`Employee "${input.name}" updated successfully.`)
+				} else {
+					render(false);
+				}
+				break;
+			case 'delete':
+				console.log(input);
+				i = findEmployee(input);
+				if (i !== -1) {
+					deleteEmployee(i);
+					render();
+					message(`Employee "${input.name}" deleted successfully.`)
+				} else {
+					render(false);
+				}
+				break;
+		}
+		clearInput();
 	}
-	clearInput();
 });
 
 $('.view').click();

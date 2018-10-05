@@ -63,6 +63,11 @@ main {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
+	align-self: center;
+
+	box-sizing: border-box;
+	width: 100%;
+	max-width: 600px;
 }
 .inputBars {
 	flex: 1;
@@ -73,11 +78,12 @@ main {
 .inputs input {
 	margin: 10px 0;
 	border-color: #90b0f9;
+	border-radius: 3px;
 	padding: 5px;
 	color: #353535;
 }
 .inputs ::placeholder {
-	color: rgba(144, 176, 249, 0.35);
+	color: rgba(54, 54, 54, 0.15);
 }
 .inputs *:focus {
 	outline: none;
@@ -115,7 +121,7 @@ main {
 	margin: 10px;
 	width: 100%;
 	max-width: 600px;
-	border: 1px solid #353535;
+	border: 1px outset white;
 	border-radius: 10px;
 	background-color: rgba(144, 176, 249, 0.1);
 	box-shadow: 0 0 4px #90b0f9;
@@ -152,6 +158,12 @@ main {
 	}
 	nav > .delete {
 		border-bottom-width: 1px;
+	}
+	.inputs {
+		/* align-self: auto; */
+		padding: 0 10px;
+		max-width: none;
+		width: 100%;
 	}
 	.employees {
 		align-items: flex-start;

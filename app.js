@@ -135,7 +135,7 @@ function deleteEmployee(employeeIndex) {
     employeeList.splice(employeeIndex, 1);
 }
 $('.submitBtn').click( function() {
-    if (input) {
+    if (input.name) {
         switch (this.innerText) {
             case 'add':
                 if (findEmployee(input) > -1) {

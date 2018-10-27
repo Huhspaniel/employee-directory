@@ -1,3 +1,3 @@
 # employee-directory
 
-Assignment for GT Coding Bootcamp
+Deployed: https://huhspaniel.github.io/employee-directory/
